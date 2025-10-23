@@ -27,7 +27,7 @@ uWSGI==2.0.28
 
 # Google Gemini AI
 google-generativeai==0.8.3
-google-genai==0.2.2
+google-genai==1.46.0
 
 # WebSocket Support
 websockets==14.1
