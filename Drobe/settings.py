@@ -207,8 +207,9 @@ if USE_S3:
     AWS_STORAGE_BUCKET_NAME = os.getenv('AWS_STORAGE_BUCKET_NAME', 'file-upload-lambda-bucket-2025')
     AWS_S3_REGION_NAME = os.getenv('AWS_S3_REGION_NAME', 'us-east-1')
 
-    # S3 Custom Domain (if using CloudFront or custom domain)
-    AWS_S3_CUSTOM_DOMAIN = os.getenv('AWS_S3_CUSTOM_DOMAIN', f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com')
+    # S3 Custom Domain - Use CloudFront if set, otherwise default S3 domain
+    custom_domain = os.getenv('AWS_S3_CUSTOM_DOMAIN', '').strip()
+    AWS_S3_CUSTOM_DOMAIN = custom_domain if custom_domain else f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'
 
     # S3 File Storage Settings
     AWS_S3_OBJECT_PARAMETERS = {
