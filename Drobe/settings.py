@@ -220,7 +220,7 @@ if USE_S3:
     AWS_DEFAULT_ACL = None
 
     # S3 Media Settings (User Uploads)
-    DEFAULT_FILE_STORAGE = 'Drobe.storage_backends.MediaStorage'
+    DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
     MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/media/'
 
     # Disable querystring auth for public files
