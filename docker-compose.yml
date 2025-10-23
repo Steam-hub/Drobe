@@ -42,6 +42,7 @@ services:
     expose:
       - "8000"
     environment:
+      - DJANGO_SETTINGS_MODULE=Drobe.settings
       - DEBUG=${DEBUG:-False}
       - SECRET_KEY=${SECRET_KEY:-please-change-this-secret-key-in-production}
       - ALLOWED_HOSTS=${ALLOWED_HOSTS:-*}
@@ -77,6 +78,7 @@ services:
     expose:
       - "8001"
     environment:
+      - DJANGO_SETTINGS_MODULE=Drobe.settings
       - DEBUG=${DEBUG:-False}
       - SECRET_KEY=${SECRET_KEY:-please-change-this-secret-key-in-production}
       - ALLOWED_HOSTS=${ALLOWED_HOSTS:-*}
