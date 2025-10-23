@@ -193,7 +193,11 @@ REST_FRAMEWORK = {
 # Gemini API Configuration
 GEMINI_API_KEY = os.getenv('GEMINI_API_KEY', '')
 
-# AWS S3 Configuration
+# Static files (CSS, JavaScript, Images) - Always served locally
+STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+# AWS S3 Configuration for Media Files Only
 USE_S3 = os.getenv('USE_S3', 'False') == 'True'
 
 if USE_S3:
@@ -211,12 +215,7 @@ if USE_S3:
         'CacheControl': 'max-age=86400',
     }
 
-    # S3 Static Settings
-    AWS_LOCATION = 'static'
-    STATIC_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/{AWS_LOCATION}/'
-    STATICFILES_STORAGE = 'Drobe.storage_backends.StaticStorage'
-
-    # S3 Media Settings
+    # S3 Media Settings (User Uploads)
     DEFAULT_FILE_STORAGE = 'Drobe.storage_backends.MediaStorage'
     MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/media/'
 
@@ -227,9 +226,7 @@ if USE_S3:
     AWS_S3_FILE_OVERWRITE = False
 
 else:
-    # Local file storage (development)
-    STATIC_URL = 'static/'
-    STATIC_ROOT = BASE_DIR / 'staticfiles'
+    # Local media file storage (development)
     MEDIA_URL = '/media/'
     MEDIA_ROOT = BASE_DIR / 'media'
 
