@@ -216,14 +216,17 @@ if USE_S3:
         'CacheControl': 'max-age=86400',
     }
 
+    # Don't use ACLs - use bucket policy instead
+    AWS_DEFAULT_ACL = None
+
     # S3 Media Settings (User Uploads)
     DEFAULT_FILE_STORAGE = 'Drobe.storage_backends.MediaStorage'
     MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/media/'
 
-    # Optional: Enable querystring auth for private files
+    # Disable querystring auth for public files
     AWS_QUERYSTRING_AUTH = False
 
-    # Optional: Set file expiration time
+    # Don't overwrite files with same name
     AWS_S3_FILE_OVERWRITE = False
 
 else:
