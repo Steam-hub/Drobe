@@ -1,0 +1,672 @@
+{
+	"info": {
+		"_postman_id": "curriculum-api-collection",
+		"name": "Curriculum API - List Endpoints",
+		"description": "Complete API collection for Curriculum, Label, and Topic list endpoints with multi-language support",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Curriculum",
+			"item": [
+				{
+					"name": "List All Curricula",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept-Language",
+								"value": "en",
+								"description": "Language preference (en or ar)",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8000/api/curriculum/curricula/?country=&is_active=&search=&ordering=",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"curriculum",
+								"curricula",
+								""
+							],
+							"query": [
+								{
+									"key": "country",
+									"value": "",
+									"description": "Filter by country (e.g., Egypt, Saudi Arabia)"
+								},
+								{
+									"key": "is_active",
+									"value": "",
+									"description": "Filter by active status (true or false)"
+								},
+								{
+									"key": "search",
+									"value": "",
+									"description": "Search in title, description, or country"
+								},
+								{
+									"key": "ordering",
+									"value": "",
+									"description": "Order by: created_at, title, country, -created_at (descending)"
+								}
+							]
+						},
+						"description": "Get list of all curricula with filtering, search, and ordering options. Returns simplified curriculum data without nested labels/topics."
+					},
+					"response": []
+				},
+				{
+					"name": "List All Curricula (Arabic)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept-Language",
+								"value": "ar",
+								"description": "Language preference (en or ar)",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8000/api/curriculum/curricula/?country=&is_active=true&search=&ordering=country",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"curriculum",
+								"curricula",
+								""
+							],
+							"query": [
+								{
+									"key": "country",
+									"value": "",
+									"description": "Filter by country (e.g., Egypt, Saudi Arabia)"
+								},
+								{
+									"key": "is_active",
+									"value": "true",
+									"description": "Filter by active status (true or false)"
+								},
+								{
+									"key": "search",
+									"value": "",
+									"description": "Search in title, description, or country"
+								},
+								{
+									"key": "ordering",
+									"value": "country",
+									"description": "Order by: created_at, title, country, -created_at (descending)"
+								}
+							]
+						},
+						"description": "Get list of all curricula in Arabic with filtering enabled for active curricula only."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Curriculum Details",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept-Language",
+								"value": "en",
+								"description": "Language preference (en or ar)",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8000/api/curriculum/curricula/:curriculum_id/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"curriculum",
+								"curricula",
+								":curriculum_id",
+								""
+							],
+							"variable": [
+								{
+									"key": "curriculum_id",
+									"value": "",
+									"description": "UUID of the curriculum"
+								}
+							]
+						},
+						"description": "Get detailed curriculum information with nested labels and topics."
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Countries",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8000/api/curriculum/curricula/countries/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"curriculum",
+								"curricula",
+								"countries",
+								""
+							]
+						},
+						"description": "Get list of all countries that have curricula."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Labels for Curriculum",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept-Language",
+								"value": "en",
+								"description": "Language preference (en or ar)",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8000/api/curriculum/curricula/:curriculum_id/labels/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"curriculum",
+								"curricula",
+								":curriculum_id",
+								"labels",
+								""
+							],
+							"variable": [
+								{
+									"key": "curriculum_id",
+									"value": "",
+									"description": "UUID of the curriculum"
+								}
+							]
+						},
+						"description": "Get all labels for a specific curriculum with nested topics."
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints for managing curricula"
+		},
+		{
+			"name": "Labels",
+			"item": [
+				{
+					"name": "List All Labels",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept-Language",
+								"value": "en",
+								"description": "Language preference (en or ar)",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8000/api/curriculum/labels/?curriculum=&search=&ordering=",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"curriculum",
+								"labels",
+								""
+							],
+							"query": [
+								{
+									"key": "curriculum",
+									"value": "",
+									"description": "Filter by curriculum UUID"
+								},
+								{
+									"key": "search",
+									"value": "",
+									"description": "Search in label title or curriculum title"
+								},
+								{
+									"key": "ordering",
+									"value": "",
+									"description": "Order by: order, created_at, title, -order (descending)"
+								}
+							]
+						},
+						"description": "Get list of all labels with nested topics. Can filter by curriculum."
+					},
+					"response": []
+				},
+				{
+					"name": "List All Labels (Arabic)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept-Language",
+								"value": "ar",
+								"description": "Language preference (en or ar)",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8000/api/curriculum/labels/?curriculum=&search=&ordering=order",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"curriculum",
+								"labels",
+								""
+							],
+							"query": [
+								{
+									"key": "curriculum",
+									"value": "",
+									"description": "Filter by curriculum UUID"
+								},
+								{
+									"key": "search",
+									"value": "",
+									"description": "Search in label title or curriculum title"
+								},
+								{
+									"key": "ordering",
+									"value": "order",
+									"description": "Order by: order, created_at, title, -order (descending)"
+								}
+							]
+						},
+						"description": "Get list of all labels in Arabic, ordered by their order field."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Label Details",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept-Language",
+								"value": "en",
+								"description": "Language preference (en or ar)",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8000/api/curriculum/labels/:label_id/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"curriculum",
+								"labels",
+								":label_id",
+								""
+							],
+							"variable": [
+								{
+									"key": "label_id",
+									"value": "",
+									"description": "UUID of the label"
+								}
+							]
+						},
+						"description": "Get detailed label information with nested topics."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Topics for Label",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept-Language",
+								"value": "en",
+								"description": "Language preference (en or ar)",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8000/api/curriculum/labels/:label_id/topics/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"curriculum",
+								"labels",
+								":label_id",
+								"topics",
+								""
+							],
+							"variable": [
+								{
+									"key": "label_id",
+									"value": "",
+									"description": "UUID of the label"
+								}
+							]
+						},
+						"description": "Get all topics for a specific label, ordered by the order field."
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints for managing labels"
+		},
+		{
+			"name": "Topics",
+			"item": [
+				{
+					"name": "List All Topics",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept-Language",
+								"value": "en",
+								"description": "Language preference (en or ar)",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8000/api/curriculum/topics/?label=&label__curriculum=&is_active=&search=&ordering=",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"curriculum",
+								"topics",
+								""
+							],
+							"query": [
+								{
+									"key": "label",
+									"value": "",
+									"description": "Filter by label UUID"
+								},
+								{
+									"key": "label__curriculum",
+									"value": "",
+									"description": "Filter by curriculum UUID"
+								},
+								{
+									"key": "is_active",
+									"value": "",
+									"description": "Filter by active status (true or false)"
+								},
+								{
+									"key": "search",
+									"value": "",
+									"description": "Search in topic title, description, or label title"
+								},
+								{
+									"key": "ordering",
+									"value": "",
+									"description": "Order by: order, created_at, title, -order (descending)"
+								}
+							]
+						},
+						"description": "Get list of all topics with filtering, search, and ordering. Only returns active topics by default."
+					},
+					"response": []
+				},
+				{
+					"name": "List All Topics (Arabic)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept-Language",
+								"value": "ar",
+								"description": "Language preference (en or ar)",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8000/api/curriculum/topics/?label=&label__curriculum=&is_active=true&search=&ordering=order",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"curriculum",
+								"topics",
+								""
+							],
+							"query": [
+								{
+									"key": "label",
+									"value": "",
+									"description": "Filter by label UUID"
+								},
+								{
+									"key": "label__curriculum",
+									"value": "",
+									"description": "Filter by curriculum UUID"
+								},
+								{
+									"key": "is_active",
+									"value": "true",
+									"description": "Filter by active status (true or false)"
+								},
+								{
+									"key": "search",
+									"value": "",
+									"description": "Search in topic title, description, or label title"
+								},
+								{
+									"key": "ordering",
+									"value": "order",
+									"description": "Order by: order, created_at, title, -order (descending)"
+								}
+							]
+						},
+						"description": "Get list of all topics in Arabic, filtered for active topics and ordered by their order field."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Topic Details",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept-Language",
+								"value": "en",
+								"description": "Language preference (en or ar)",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8000/api/curriculum/topics/:topic_id/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"curriculum",
+								"topics",
+								":topic_id",
+								""
+							],
+							"variable": [
+								{
+									"key": "topic_id",
+									"value": "",
+									"description": "UUID of the topic"
+								}
+							]
+						},
+						"description": "Get detailed topic information including all fields."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Topics by Curriculum",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept-Language",
+								"value": "en",
+								"description": "Language preference (en or ar)",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8000/api/curriculum/topics/by_curriculum/?curriculum_id=",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"curriculum",
+								"topics",
+								"by_curriculum",
+								""
+							],
+							"query": [
+								{
+									"key": "curriculum_id",
+									"value": "",
+									"description": "UUID of the curriculum (REQUIRED)"
+								}
+							]
+						},
+						"description": "Get all topics for a specific curriculum. Requires curriculum_id parameter."
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints for managing topics"
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8000",
+			"type": "string"
+		},
+		{
+			"key": "language",
+			"value": "en",
+			"type": "string"
+		}
+	]
+}

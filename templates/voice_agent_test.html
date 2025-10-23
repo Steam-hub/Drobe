@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voice Agent Test - Gemini Live</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 600px;
+            width: 100%;
+            padding: 40px;
+        }
+
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .status-card {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+            border-left: 4px solid #667eea;
+        }
+
+        .status-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .status-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .status-label {
+            color: #666;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .status-value {
+            font-weight: 600;
+            font-size: 14px;
+            padding: 4px 12px;
+            border-radius: 20px;
+        }
+
+        .status-disconnected {
+            background: #fee;
+            color: #c00;
+        }
+
+        .status-connected {
+            background: #efe;
+            color: #060;
+            animation: pulse 2s infinite;
+        }
+
+        .status-listening {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .controls {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 30px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 16px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+
+        .btn-danger:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(245, 87, 108, 0.3);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+        }
+
+        .btn-success:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(79, 172, 254, 0.3);
+        }
+
+        .session-info {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            color: #856404;
+        }
+
+        .session-info strong {
+            color: #533f03;
+        }
+
+        .log-container {
+            background: #1e1e1e;
+            border-radius: 12px;
+            padding: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+        }
+
+        .log-entry {
+            margin-bottom: 8px;
+            line-height: 1.5;
+        }
+
+        .log-info { color: #4fc3f7; }
+        .log-success { color: #81c784; }
+        .log-error { color: #e57373; }
+        .log-warning { color: #ffb74d; }
+
+        .visualizer {
+            margin: 30px 0;
+            height: 100px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .visualizer-bars {
+            display: flex;
+            gap: 4px;
+            height: 100%;
+            align-items: center;
+        }
+
+        .visualizer-bar {
+            width: 4px;
+            background: linear-gradient(to top, #667eea, #764ba2);
+            border-radius: 2px;
+            transition: height 0.1s ease;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #666;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .mic-icon {
+            font-size: 20px;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Voice Agent Test</h1>
+        <p class="subtitle">Test your Gemini Live voice agent connection</p>
+
+        <div class="input-group">
+            <label for="sessionId">Session ID (optional - will create new if empty)</label>
+            <input type="text" id="sessionId" placeholder="Enter session ID or leave empty to create new">
+        </div>
+
+        <div class="input-group">
+            <label for="initialMessage">Initial Message for AI (optional)</label>
+            <textarea id="initialMessage" rows="3" placeholder="Enter a message for the AI to read before the student starts speaking. Example: 'You are helping a student with fractions. Start by greeting them warmly.'" style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px; font-family: inherit; resize: vertical;"></textarea>
+        </div>
+
+        <div class="session-info hidden" id="sessionInfo">
+            <strong>Active Session:</strong> <span id="activeSessionId"></span>
+        </div>
+
+        <div class="status-card">
+            <div class="status-row">
+                <span class="status-label">Connection</span>
+                <span class="status-value status-disconnected" id="connectionStatus">Disconnected</span>
+            </div>
+            <div class="status-row">
+                <span class="status-label">Microphone</span>
+                <span class="status-value status-disconnected" id="micStatus">Off</span>
+            </div>
+            <div class="status-row">
+                <span class="status-label">Audio Output</span>
+                <span class="status-value status-disconnected" id="audioStatus">Ready</span>
+            </div>
+        </div>
+
+        <div class="visualizer" id="visualizer">
+            <div class="visualizer-bars" id="visualizerBars"></div>
+        </div>
+
+        <div class="controls">
+            <button class="btn btn-primary" id="connectBtn">
+                <span class="mic-icon">🎤</span>
+                Connect & Start
+            </button>
+            <button class="btn btn-danger" id="disconnectBtn" disabled>
+                <span>⏹️</span>
+                Disconnect
+            </button>
+        </div>
+
+        <div class="log-container" id="logContainer"></div>
+    </div>
+
+    <script>
+        let ws = null;
+        let audioContext = null;
+        let mediaStream = null;
+        let audioWorkletNode = null;
+        let isRecording = false;
+        let currentSessionId = null;
+
+        // Audio queue management (like Google's example)
+        let audioQueue = [];
+        let isPlaying = false;
+        let currentAudioSource = null;
+        let lastUserAudioTime = 0;
+        let isAISpeaking = false;
+
+        const connectBtn = document.getElementById('connectBtn');
+        const disconnectBtn = document.getElementById('disconnectBtn');
+        const sessionIdInput = document.getElementById('sessionId');
+        const initialMessageInput = document.getElementById('initialMessage');
+        const sessionInfo = document.getElementById('sessionInfo');
+        const activeSessionId = document.getElementById('activeSessionId');
+        const logContainer = document.getElementById('logContainer');
+        const visualizerBars = document.getElementById('visualizerBars');
+
+        // Create visualizer bars
+        for (let i = 0; i < 20; i++) {
+            const bar = document.createElement('div');
+            bar.className = 'visualizer-bar';
+            bar.style.height = '20px';
+            visualizerBars.appendChild(bar);
+        }
+
+        // Logging functions
+        function log(message, type = 'info') {
+            const entry = document.createElement('div');
+            entry.className = `log-entry log-${type}`;
+            const timestamp = new Date().toLocaleTimeString();
+            entry.textContent = `[${timestamp}] ${message}`;
+            logContainer.appendChild(entry);
+            logContainer.scrollTop = logContainer.scrollHeight;
+        }
+
+        function updateStatus(element, status, statusClass) {
+            element.textContent = status;
+            element.className = `status-value status-${statusClass}`;
+        }
+
+        async function createSession() {
+            try {
+                const initialMessage = initialMessageInput.value.trim();
+
+                const requestBody = {
+                    level_description: 'Testing voice agent',
+                    child_age: 10
+                };
+
+                // Add initial_message if provided
+                if (initialMessage) {
+                    requestBody.initial_message = initialMessage;
+                }
+
+                const response = await fetch('/api/sessions/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(requestBody)
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to create session');
+                }
+
+                const data = await response.json();
+                return data.id;
+            } catch (error) {
+                log(`Error creating session: ${error.message}`, 'error');
+                throw error;
+            }
+        }
+
+        async function startVoiceAgent() {
+            try {
+                // Get or create session
+                let sessionId = sessionIdInput.value.trim();
+                if (!sessionId) {
+                    log('Creating new session...', 'info');
+                    sessionId = await createSession();
+                    log(`Created session: ${sessionId}`, 'success');
+                }
+
+                currentSessionId = sessionId;
+                sessionIdInput.value = sessionId;
+                activeSessionId.textContent = sessionId;
+                sessionInfo.classList.remove('hidden');
+
+                // Initialize Audio Context
+                // Use default sample rate for better compatibility, we'll resample in the buffer
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
+                // Request microphone access
+                log('Requesting microphone access...', 'info');
+                mediaStream = await navigator.mediaDevices.getUserMedia({
+                    audio: {
+                        sampleRate: 16000,
+                        channelCount: 1,
+                        echoCancellation: true,
+                        noiseSuppression: true,
+                        autoGainControl: true
+                    }
+                });
+
+                updateStatus(document.getElementById('micStatus'), 'Active', 'listening');
+                log('Microphone access granted', 'success');
+
+                // Connect to WebSocket
+                const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+                const wsUrl = `${protocol}//${window.location.host}/ws/audio-chat/${sessionId}/`;
+                log(`Connecting to ${wsUrl}...`, 'info');
+
+                ws = new WebSocket(wsUrl);
+                ws.binaryType = 'arraybuffer';
+
+                ws.onopen = () => {
+                    log('WebSocket connected', 'success');
+                    updateStatus(document.getElementById('connectionStatus'), 'Connected', 'connected');
+                    connectBtn.disabled = true;
+                    disconnectBtn.disabled = false;
+                    startAudioStreaming();
+                };
+
+                ws.onmessage = async (event) => {
+                    if (event.data instanceof ArrayBuffer) {
+                        // Received audio from Gemini - add to queue
+                        queueAudio(event.data);
+                        animateVisualizer();
+                    } else {
+                        const data = JSON.parse(event.data);
+                        handleJsonMessage(data);
+                    }
+                };
+
+                ws.onerror = (error) => {
+                    log('WebSocket error', 'error');
+                    console.error(error);
+                };
+
+                ws.onclose = () => {
+                    log('WebSocket disconnected', 'warning');
+                    updateStatus(document.getElementById('connectionStatus'), 'Disconnected', 'disconnected');
+                    stopVoiceAgent();
+                };
+
+            } catch (error) {
+                log(`Error: ${error.message}`, 'error');
+                stopVoiceAgent();
+            }
+        }
+
+        function handleJsonMessage(data) {
+            switch (data.type) {
+                case 'connection':
+                    log(`${data.message}`, 'success');
+                    log(`Model: ${data.model}`, 'info');
+                    log(`History loaded: ${data.history_message_count} messages`, 'info');
+                    break;
+                case 'response':
+                    log(`AI: ${data.content}`, 'success');
+                    break;
+                case 'turn_complete':
+                    // Turn complete - just log it, don't clear the queue
+                    // The audio queue will naturally finish playing all received chunks
+                    // Only clear on user interruption (when they start speaking)
+                    log('Turn complete', 'info');
+                    break;
+                case 'error':
+                    log(`Error: ${data.message}`, 'error');
+                    break;
+                case 'pong':
+                    break;
+                default:
+                    log(`Unknown message type: ${data.type}`, 'warning');
+            }
+        }
+
+        function downsampleTo16kHz(audioData, sourceSampleRate) {
+            // Resample audio from sourceSampleRate to 16kHz
+            const targetSampleRate = 16000;
+            const sampleRateRatio = sourceSampleRate / targetSampleRate;
+            const newLength = Math.round(audioData.length / sampleRateRatio);
+            const result = new Float32Array(newLength);
+
+            for (let i = 0; i < newLength; i++) {
+                const srcIndex = i * sampleRateRatio;
+                const srcIndexFloor = Math.floor(srcIndex);
+                const srcIndexCeil = Math.min(srcIndexFloor + 1, audioData.length - 1);
+                const t = srcIndex - srcIndexFloor;
+
+                // Linear interpolation between samples
+                result[i] = audioData[srcIndexFloor] * (1 - t) + audioData[srcIndexCeil] * t;
+            }
+
+            return result;
+        }
+
+        function startAudioStreaming() {
+            const source = audioContext.createMediaStreamSource(mediaStream);
+            const actualSampleRate = audioContext.sampleRate;
+            log(`Audio capture sample rate: ${actualSampleRate} Hz`, 'info');
+
+            // Use 1024 chunk size to match Google's example (was 4096)
+            const processor = audioContext.createScriptProcessor(1024, 1, 1);
+
+            processor.onaudioprocess = (e) => {
+                if (!isRecording || !ws || ws.readyState !== WebSocket.OPEN) return;
+
+                const inputData = e.inputBuffer.getChannelData(0);
+
+                // Calculate audio energy for visualizer and interruption detection
+                let sum = 0;
+                for (let i = 0; i < inputData.length; i++) {
+                    sum += Math.abs(inputData[i]);
+                }
+                const average = sum / inputData.length;
+                const isSpeaking = average > 0.02;
+
+                // Update visualizer with input levels
+                updateVisualizerWithData(inputData);
+
+                // User interruption detection (for clearing AI audio queue)
+                if (isSpeaking) {
+                    const now = Date.now();
+                    // If user starts speaking and AI was speaking, interrupt the AI
+                    if (isAISpeaking && now - lastUserAudioTime > 1000) {
+                        clearAudioQueue();
+                        log('User interruption detected', 'warning');
+                    }
+                    lastUserAudioTime = now;
+                }
+
+                // CRITICAL: Send ALL audio continuously (like Google's example)
+                // Gemini's built-in VAD will detect speech - don't filter on client side!
+
+                // Resample to 16kHz if needed (Gemini requires 16kHz PCM)
+                let audioToSend = inputData;
+                if (actualSampleRate !== 16000) {
+                    audioToSend = downsampleTo16kHz(inputData, actualSampleRate);
+                }
+
+                // Convert Float32Array to Int16Array (PCM)
+                const pcmData = new Int16Array(audioToSend.length);
+                for (let i = 0; i < audioToSend.length; i++) {
+                    const s = Math.max(-1, Math.min(1, audioToSend[i]));
+                    pcmData[i] = s < 0 ? s * 0x8000 : s * 0x7FFF;
+                }
+
+                // Send ALL audio chunks to WebSocket (including silence)
+                // Gemini's built-in VAD handles speech detection automatically
+                ws.send(pcmData.buffer);
+            };
+
+            source.connect(processor);
+            processor.connect(audioContext.destination);
+            audioWorkletNode = processor;
+            isRecording = true;
+            log('Audio streaming started', 'success');
+        }
+
+        // Queue-based audio handling (like Google's example)
+        function queueAudio(audioData) {
+            audioQueue.push(audioData);
+            isAISpeaking = true;
+            if (!isPlaying) {
+                playNextAudio();
+            }
+        }
+
+        async function playNextAudio() {
+            if (audioQueue.length === 0) {
+                isPlaying = false;
+                isAISpeaking = false;
+                updateStatus(document.getElementById('audioStatus'), 'Ready', 'connected');
+                return;
+            }
+
+            isPlaying = true;
+            isAISpeaking = true;
+            updateStatus(document.getElementById('audioStatus'), 'Playing', 'listening');
+
+            const audioData = audioQueue.shift();
+
+            try {
+                // Decode audio data (24kHz PCM from Gemini)
+                const int16Array = new Int16Array(audioData);
+                const float32Array = new Float32Array(int16Array.length);
+
+                // Convert with proper normalization to reduce noise
+                for (let i = 0; i < int16Array.length; i++) {
+                    // Proper PCM16 to Float32 conversion
+                    const sample = int16Array[i];
+                    float32Array[i] = sample < 0 ? sample / 32768.0 : sample / 32767.0;
+                }
+
+                // Create audio buffer with correct sample rate (24kHz from Gemini)
+                const audioBuffer = audioContext.createBuffer(1, float32Array.length, 24000);
+                audioBuffer.getChannelData(0).set(float32Array);
+
+                currentAudioSource = audioContext.createBufferSource();
+                currentAudioSource.buffer = audioBuffer;
+                currentAudioSource.connect(audioContext.destination);
+
+                currentAudioSource.onended = () => {
+                    currentAudioSource = null;
+                    // Continue playing next chunk
+                    playNextAudio();
+                };
+
+                currentAudioSource.start();
+
+            } catch (error) {
+                log(`Error playing audio: ${error.message}`, 'error');
+                updateStatus(document.getElementById('audioStatus'), 'Error', 'disconnected');
+                currentAudioSource = null;
+                isAISpeaking = false;
+                playNextAudio();
+            }
+        }
+
+        function clearAudioQueue() {
+            // Stop current playback
+            if (currentAudioSource) {
+                try {
+                    currentAudioSource.stop();
+                    currentAudioSource.disconnect();
+                } catch (e) {
+                    // Ignore errors if already stopped
+                }
+                currentAudioSource = null;
+            }
+
+            // Clear the queue
+            audioQueue = [];
+            isPlaying = false;
+            isAISpeaking = false;
+            updateStatus(document.getElementById('audioStatus'), 'Ready', 'connected');
+        }
+
+        function updateVisualizerWithData(audioData) {
+            const bars = visualizerBars.children;
+            const step = Math.floor(audioData.length / bars.length);
+
+            for (let i = 0; i < bars.length; i++) {
+                let sum = 0;
+                for (let j = 0; j < step; j++) {
+                    sum += Math.abs(audioData[i * step + j]);
+                }
+                const average = sum / step;
+                const height = Math.max(20, Math.min(100, average * 300));
+                bars[i].style.height = `${height}px`;
+            }
+        }
+
+        function animateVisualizer() {
+            const bars = visualizerBars.children;
+            for (let i = 0; i < bars.length; i++) {
+                const height = 20 + Math.random() * 80;
+                bars[i].style.height = `${height}px`;
+            }
+        }
+
+        function stopVoiceAgent() {
+            isRecording = false;
+
+            // Clear audio queue
+            clearAudioQueue();
+
+            if (audioWorkletNode) {
+                audioWorkletNode.disconnect();
+                audioWorkletNode = null;
+            }
+
+            if (mediaStream) {
+                mediaStream.getTracks().forEach(track => track.stop());
+                mediaStream = null;
+            }
+
+            if (ws) {
+                ws.close();
+                ws = null;
+            }
+
+            if (audioContext) {
+                audioContext.close();
+                audioContext = null;
+            }
+
+            updateStatus(document.getElementById('micStatus'), 'Off', 'disconnected');
+            updateStatus(document.getElementById('connectionStatus'), 'Disconnected', 'disconnected');
+            updateStatus(document.getElementById('audioStatus'), 'Ready', 'disconnected');
+
+            connectBtn.disabled = false;
+            disconnectBtn.disabled = true;
+
+            log('Voice agent stopped', 'info');
+        }
+
+        // Event listeners
+        connectBtn.addEventListener('click', startVoiceAgent);
+        disconnectBtn.addEventListener('click', stopVoiceAgent);
+
+        // Initialize
+        log('Voice agent test interface loaded', 'info');
+        log('Click "Connect & Start" to begin testing', 'info');
+    </script>
+</body>
+</html>

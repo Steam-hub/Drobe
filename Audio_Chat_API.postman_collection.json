@@ -1,0 +1,211 @@
+{
+	"info": {
+		"_postman_id": "audio-chat-api-collection",
+		"name": "Audio Chat API - Child Learning Assistant (Live API)",
+		"description": "API collection for streaming audio chat with Gemini Live API to help children (ages 4-10) with game challenges.\n\n⚠️ IMPORTANT: Requires Python 3.9+ and google-genai SDK\n\nFeatures:\n- Gemini Live API with native audio streaming\n- Create chat sessions with level descriptions\n- Upload screenshots for visual assistance\n- Real-time bidirectional audio streaming via WebSocket\n- Full conversation history maintained\n- Retrieve chat history\n\nTechnology:\n- Model: gemini-2.5-flash-native-audio-preview-09-2025\n- SDK: google-genai (NEW)\n- Audio: 16kHz PCM input, 24kHz PCM output\n\nWebSocket URL: ws://localhost:8000/ws/audio-chat/{session_id}/",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Health Check",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/api/health/",
+					"host": ["{{base_url}}"],
+					"path": ["api", "health", ""]
+				},
+				"description": "Check if the API is running"
+			},
+			"response": []
+		},
+		{
+			"name": "Create Chat Session",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Save session_id for future requests",
+							"if (pm.response.code === 201) {",
+							"    var jsonData = pm.response.json();",
+							"    pm.environment.set(\"session_id\", jsonData.id);",
+							"    console.log(\"Session ID saved: \" + jsonData.id);",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"level_description\": \"Level 3: The child needs to collect 5 stars by jumping over obstacles and solving simple color matching puzzles.\",\n    \"child_age\": 7\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/api/sessions/",
+					"host": ["{{base_url}}"],
+					"path": ["api", "sessions", ""]
+				},
+				"description": "Create a new chat session with level description and child's age (4-10)"
+			},
+			"response": []
+		},
+		{
+			"name": "List Active Sessions",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/api/sessions/",
+					"host": ["{{base_url}}"],
+					"path": ["api", "sessions", ""]
+				},
+				"description": "Get all active chat sessions"
+			},
+			"response": []
+		},
+		{
+			"name": "Get Session Details",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/api/sessions/{{session_id}}/",
+					"host": ["{{base_url}}"],
+					"path": ["api", "sessions", "{{session_id}}", ""]
+				},
+				"description": "Get details of a specific chat session"
+			},
+			"response": []
+		},
+		{
+			"name": "End Chat Session",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/sessions/{{session_id}}/end_session/",
+					"host": ["{{base_url}}"],
+					"path": ["api", "sessions", "{{session_id}}", "end_session", ""]
+				},
+				"description": "End a chat session (marks as inactive)"
+			},
+			"response": []
+		},
+		{
+			"name": "Upload Screenshot",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "session_id",
+							"value": "{{session_id}}",
+							"type": "text"
+						},
+						{
+							"key": "image",
+							"type": "file",
+							"src": []
+						},
+						{
+							"key": "question",
+							"value": "I'm stuck on this part. Can you help me understand what to do?",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{base_url}}/api/screenshot/",
+					"host": ["{{base_url}}"],
+					"path": ["api", "screenshot", ""]
+				},
+				"description": "Upload a screenshot for visual assistance. The AI will analyze the image and provide helpful guidance."
+			},
+			"response": []
+		},
+		{
+			"name": "Get Chat History",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/api/history/?session_id={{session_id}}&limit=50",
+					"host": ["{{base_url}}"],
+					"path": ["api", "history", ""],
+					"query": [
+						{
+							"key": "session_id",
+							"value": "{{session_id}}"
+						},
+						{
+							"key": "limit",
+							"value": "50",
+							"description": "Optional: Number of messages to retrieve (default: 50, max: 200)"
+						}
+					]
+				},
+				"description": "Retrieve chat history for a session"
+			},
+			"response": []
+		},
+		{
+			"name": "WebSocket Connection Info",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/api/health/",
+					"host": ["{{base_url}}"],
+					"path": ["api", "health", ""]
+				},
+				"description": "WebSocket connection information for Gemini Live API:\n\n⚠️ IMPORTANT: Requires Python 3.9+ and google-genai SDK\n\n**WebSocket URL Pattern:**\n```\nws://localhost:8000/ws/audio-chat/{session_id}/\n```\n\n**Connection Message (NEW - Live API):**\n```json\n{\n    \"type\": \"connection\",\n    \"message\": \"Connected to Gemini Live API with native audio streaming\",\n    \"session_id\": \"uuid-here\",\n    \"history_message_count\": 0,\n    \"model\": \"gemini-2.5-flash-native-audio-preview-09-2025\",\n    \"audio_format\": \"PCM 16kHz 16-bit mono (input), 24kHz mono (output)\"\n}\n```\n\n**Send Text Message:**\n```json\n{\n    \"type\": \"text\",\n    \"content\": \"I need help with the puzzle!\"\n}\n```\n\n**Send Audio (Binary - Recommended):**\n```javascript\n// Send audio as binary WebSocket message\nws.send(audioBlob);  // 16-bit PCM, 16kHz, mono\n```\n\n**Send Audio (Base64 in JSON):**\n```json\n{\n    \"type\": \"audio_base64\",\n    \"content\": \"base64_encoded_audio_data_here\"\n}\n```\n\n**Receive Text Response:**\n```json\n{\n    \"type\": \"response\",\n    \"content\": \"Sure! Let me help you with that...\",\n    \"session_id\": \"uuid-here\"\n}\n```\n\n**Receive Audio Response (Binary):**\n```javascript\n// Audio received as binary WebSocket message (Blob)\n// Format: 16-bit PCM, 24kHz, mono\nws.onmessage = (event) => {\n    if (event.data instanceof Blob) {\n        // Audio data from Gemini Live API\n        playAudio(event.data);\n    }\n}\n```\n\n**Audio Format Requirements:**\n- Input: 16-bit PCM, 16kHz, mono\n- Output: 16-bit PCM, 24kHz, mono\n- MIME Type (input): audio/pcm;rate=16000\n\n**Error Format:**\n```json\n{\n    \"type\": \"error\",\n    \"message\": \"Error description\",\n    \"error\": \"detailed error message\",\n    \"note\": \"Live API requires Python 3.9+ and google-genai package\"\n}\n```\n\n**Ping/Pong (Keepalive):**\nSend:\n```json\n{\"type\": \"ping\"}\n```\nReceive:\n```json\n{\"type\": \"pong\"}\n```\n\n**Complete Example:**\n```javascript\nconst ws = new WebSocket('ws://localhost:8000/ws/audio-chat/{session_id}/');\n\nws.onopen = () => {\n    console.log('Connected to Live API!');\n    \n    // Send text\n    ws.send(JSON.stringify({\n        type: 'text',\n        content: 'Hello!'\n    }));\n};\n\nws.onmessage = (event) => {\n    if (event.data instanceof Blob) {\n        // Binary audio response (24kHz PCM)\n        playAudio(event.data);\n    } else {\n        // Text response\n        const data = JSON.parse(event.data);\n        console.log(data.content);\n    }\n};\n\n// Send audio\nfunction sendAudio(audioBlob) {\n    ws.send(audioBlob);  // 16kHz PCM mono\n}\n```"
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [""]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [""]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8000",
+			"type": "string"
+		},
+		{
+			"key": "session_id",
+			"value": "",
+			"type": "string"
+		}
+	]
+}
